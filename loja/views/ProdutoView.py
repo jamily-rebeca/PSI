@@ -81,25 +81,37 @@ def list_produto_view(request, id=None):
     return render(request, template_name='produto/produto.html', context=context, status=200)
 
     
-
-
-
-    if produto is not None:
-        produtos = produtos.filter(Produto__icontains=produto )
-    if promocao is not None:
-        produtos = produtos.filter(promocao=promocao)
-    if destaque is not None:
-        produtos = produtos.filter(destaque=destaque)
-    if categoria is not None:
-        produtos = produtos.filter(categoria__Categoria__icontains=categoria)
-    if fabricante is not None:
-        produtos = produtos.filter(fabricante__Fabricante=fabricante)
+def details_produto_view(request, id=None):
+    # Processa o evento GET gerado pela action
+    produtos = Produto.objects.all()
     if id is not None:
         produtos = produtos.filter(id=id)
-    print(produtos)
+    produto = produtos.first()
+    print(produto)
+    context = {'produto': produto}
+    return render(request, template_name='produto/produto-details.html', context=context,
+    status=200)
+
+
+
+
+
+    #if produto is not None:
+    #    produtos = produtos.filter(Produto__icontains=produto )
+    #if promocao is not None:
+    #    produtos = produtos.filter(promocao=promocao)
+    #if destaque is not None:
+    #    produtos = produtos.filter(destaque=destaque)
+    #if categoria is not None:
+    #    produtos = produtos.filter(categoria__Categoria__icontains=categoria)
+    #if fabricante is not None:
+    #    produtos = produtos.filter(fabricante__Fabricante=fabricante)
+    #if id is not None:
+    #    produtos = produtos.filter(id=id)
+    #print(produtos)
 
    # return HttpResponse(f"<p>{produtos[0].Produto}</p>")
 
-    if id is None:
-        return HttpResponse('<h1>Nenhum id foi informado</h1>')
-    return HttpResponse('<h1>Produto de id %s!</h1>' % id)
+   # if id is None:
+    #    return HttpResponse('<h1>Nenhum id foi informado</h1>')
+    #return HttpResponse('<h1>Produto de id %s!</h1>' % id)
