@@ -16,6 +16,9 @@ def edit_produto_postback(request, id=None):
         destaque = request.POST.get("destaque")
         promocao = request.POST.get("promocao")
         msgPromocao = request.POST.get("msgPromocao")
+        #adicione a requisição do valor do campo post
+        categoria = request.POST.get("CategoriaFk")
+        fabricante = request.POST.get("FabricanteFk")
         print("postback")
         print(id)
         print(produto)
@@ -27,6 +30,9 @@ def edit_produto_postback(request, id=None):
             obj_produto.Produto = produto
             obj_produto.destaque = (destaque is not None)
             obj_produto.promocao = (promocao is not None)
+            #salve os objeto fabricante e categoria filtrados com base no id recebido navariavel categoria e fabricante
+            obj_produto.fabricante = Fabricante.objects.filter(id=fabricante).first()
+            obj_produto.categoria = Categoria.objects.filter(id=categoria).first()
             if msgPromocao is not None:
                 obj_produto.msgPromocao = msgPromocao
                 obj_produto.save()
@@ -42,7 +48,10 @@ def edit_produto_view(request, id=None):
         produtos = produtos.filter(id=id)
     produto = produtos.first()
     print(produto)
-    context = { 'produto': produto }
+    #adicione a lista de fabricantes e categorias no context
+    Fabricantes = Fabricante.objects.all()
+    Categorias = Categoria.objects.all()
+    context = {'produto': produto, 'fabricantes' : Fabricantes, 'categorias' : Categorias}
     return render(request, template_name='produto/produto-edit.html', context=context, status=200)
 
 def list_produto_view(request, id=None):
@@ -89,7 +98,7 @@ def details_produto_view(request, id=None):
         produtos = produtos.filter(id=id)
     produto = produtos.first()
     print(produto)
-    context = {'produto': produto}
+    context={"produto": produto, "fabricantes": Fabricante.objects.all(), "categorias": Categoria.objects.all()}
     return render(request, template_name='produto/produto-details.html', context=context,
     status=200)
 
@@ -100,7 +109,8 @@ def delete_produto_view(request, id=None):
         produtos = produtos.filter(id=id)
     produto = produtos.first()
     print(produto)
-    context = {'produto': produto}
+    
+    context={"produto": produto, "fabricantes": Fabricante.objects.all(), "categorias": Categoria.objects.all()}
     return render(request, template_name='produto/produto-delete.html', context=context, status=200)
 
 def delete_produto_postback(request, id=None):
@@ -162,7 +172,7 @@ def create_produto_view(request, id=None):
         except Exception as e:
             print("Erro inserindo produto: %s" % e)
             return redirect("/produto")
-    return render(request, template_name='produto/produto-create.html',status=200)
+    return render(request, template_name='produto/produto-create.html', context={"fabricantes": Fabricante.objects.all(), "categorias": Categoria.objects.all()},status=200)
 
     #if produto is not None:
     #    produtos = produtos.filter(Produto__icontains=produto )
